@@ -168,7 +168,7 @@ function MeetingTypeList() {
        title='Paste meet link here'
        className='text-center'
        buttonText = "Join Meeting"
-       handleClick={()=>{router.push(values.link)}}
+       handleClick={() => { window.open(values.link, "_blank"); }}
        >
        <Input className='border-none bg-dark-2 focus-visible:ring-0 focus-visible:ring-offset-0' placeholder="Paste meeting link here"
        onChange={(e)=>{

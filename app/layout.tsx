@@ -5,6 +5,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import ToasterCustom from "@/components/ToasterCustom";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import 'react-datepicker/dist/react-datepicker.css'
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -47,6 +49,8 @@ export default function RootLayout({
         className={`${geistSans.variable} bg-dark-2 ${geistMono.variable} antialiased`}
       >
         {children}
+        <Analytics/>
+        <SpeedInsights/>
         <ToasterCustom/>
       </body>
       </ClerkProvider>

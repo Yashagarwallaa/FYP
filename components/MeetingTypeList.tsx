@@ -37,7 +37,11 @@ function MeetingTypeList() {
 
                const startsAt = values.dateTime.toISOString() || new Date(Date.now()).toISOString();
                const description = values.description||'Instant Meeting';
-               if(!startsAt)alert("Meeting could not be scheduled")
+               if(!startsAt){
+                toast({
+                  description:"Meeting could not be scheduled",
+                })
+               }
       
                await call.getOrCreate({
                 data:{
@@ -49,13 +53,17 @@ function MeetingTypeList() {
                })
 
               setcallDetails(call);
-              alert("Meeting Created Successfully");
+              toast({
+                description: "Meeting created successfully",
+              })
               if(!values.description)router.push(`/meeting/${call.id}`);
             
       
             }catch(err){
               console.log(err);
-              alert("Meeting was not created");
+              toast({
+                description: "Meeting was not created",
+              })
       
             }
     }
@@ -141,7 +149,9 @@ function MeetingTypeList() {
         // toast({
         //   title: "Link Copied",
         // })
-        alert("Link Copied");
+        toast({
+          description:"Link Copied"
+        })
        }}
        image='/icons/checked.svg'
        buttonIcon='/icons/copy.svg'

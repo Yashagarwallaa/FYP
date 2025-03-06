@@ -26,6 +26,7 @@ function MeetingTypeList() {
       description:'',
       link:''
     })
+    const baseUrl = "fyp-two-pi.vercel.app/";
     const [callDetails,setcallDetails] = useState<Call>()
     const createMeeting =async()=>{
             if(!user||!client)return;
@@ -168,7 +169,8 @@ function MeetingTypeList() {
        title='Paste meet link here'
        className='text-center'
        buttonText = "Join Meeting"
-       handleClick={() => { window.open(values.link, "_blank"); }}
+
+       handleClick={()=>{router.push(values.link.replace(baseUrl,""))}}
        >
        <Input className='border-none bg-dark-2 focus-visible:ring-0 focus-visible:ring-offset-0' placeholder="Paste meeting link here"
        onChange={(e)=>{

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
-
+import { useToast } from "@/hooks/use-toast";
 interface MeetingCardProps {
   title: string;
   date: string;
@@ -14,6 +14,13 @@ interface MeetingCardProps {
   buttonText?: string;
   handleClick: () => void;
   link: string;
+  showTranscriptButton: boolean,
+  showSummaryButton : boolean,
+  transcriptButtonText : string,
+  summaryButtonText : string,
+  handleTranscriptClick : ()=>void;
+
+ handleSummaryClick:()=>void
 }
 
 const MeetingCard = ({
@@ -25,10 +32,19 @@ const MeetingCard = ({
   handleClick,
   link,
   buttonText,
+  showTranscriptButton,
+    showSummaryButton,
+    transcriptButtonText,
+    summaryButtonText,
+    handleTranscriptClick,
+    handleSummaryClick
 }: MeetingCardProps) => {
 //   const { toast } = useToast();
 // add alll meet members --- task left
+const {toast} = useToast();
+
   return (
+
     <section className="flex min-h-[258px] w-full flex-col justify-between rounded-[14px] bg-dark-1 px-5 py-8 xl:max-w-[568px]">
       <article className="flex flex-col gap-5">
         <Image src={icon} alt="upcoming" width={28} height={28} />
@@ -52,9 +68,7 @@ const MeetingCard = ({
               style={{ top: 0, left: index * 28 }}
             />
           ))} */}
-          <div className="flex-center absolute left-[136px] size-10 rounded-full border-[5px] border-dark-3 bg-dark-4">
-            +5
-          </div>
+         
         </div>
         {!isPreviousMeeting && (
           <div className="flex gap-2">
@@ -67,9 +81,11 @@ const MeetingCard = ({
             <Button
               onClick={() => {
                 navigator.clipboard.writeText(link);
-                alert("Link Copied");
+                toast({
+                  description:"Link Copied"
+                })
               }}
-              className="bg-dark-4 px-6"
+              className="bg-dark-2 px-4"
             >
               <Image
                 src="/icons/copy.svg"
@@ -79,6 +95,20 @@ const MeetingCard = ({
               />
               &nbsp; Copy Link
             </Button>
+            {/* New transcript button */}
+            {showTranscriptButton && (
+                    <button className=" rounded bg-blue-1 px-3" onClick={handleTranscriptClick}>
+                        {transcriptButtonText}
+                    </button>
+                )}
+                
+                {/* New summary button */}
+                {showSummaryButton && (
+                    <button className=" rounded bg-blue-1 px-3" onClick={handleSummaryClick}>
+                        {summaryButtonText}
+                    </button>
+                )}
+
           </div>
         )}
       </article>

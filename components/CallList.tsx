@@ -5,12 +5,18 @@ import useGetCalls from '@/hooks/useGetCalls';
 import { useRouter } from 'next/navigation';
 import { Call, CallRecording, CallRecordingList } from '@stream-io/video-react-sdk';
 import MeetingCard from './MeetingCard';
+import * as path from 'path';
+// import downloadAndExtractAudio from '../components/downloadAudio.js'
+import {useDownloadMP3,getTranscript, getSummary} from '../components/TrancribeFunction';
 import Loader from './Loader';
+import trancribeAudio from './TrancribeFunction';
+import getPDF from './downloadPdf';
 function CallList({type}:{type:'ended' | 'upcoming'|'recordings'}) {
 
     const {endedCalls,upComingCalls,callRecordings, isLoading} = useGetCalls();
     const router = useRouter();
     const [recordings,setRecordings] = useState<CallRecording[]>([])
+    const [transcripts,setTranscripts] = useState("");
      
     const getCalls = ()=>{
         switch(type){
@@ -54,7 +60,54 @@ useEffect(()=>{
 },[type,callRecordings])
 
 if(isLoading)return <Loader/>
+const handleGetTranscript = async(meeting: CallRecording) => {
+    // const { downloadMP3 } = useDownloadMP3();
+    // await downloadMP3({ url: meeting.url });
+    try {
+        const response = await fetch(`/api/getAudio?url=${encodeURIComponent(meeting.url)}`);
+        const data = await response.json();
+          
+        if (data.success) {
+            console.log('File saved at:', data.filePath);
+        } else {
+            console.log('Download failed:', data.error);
+        }
+        const transcript = await getTranscript(data.filePath);
+    if (transcript) {
+        console.log('Transcript:', transcript);
+        getPDF(transcript,'meeting_transcript', 'Meeting Transcript');
+        setTranscripts(transcript);
 
+    }
+
+    } catch (error) {
+        console.log('Error:', error);
+    }
+  
+};
+
+const handleGetSummary = async(meeting: CallRecording) => {
+        if(transcripts!==""){
+            const summary = await getSummary(transcripts);
+            getPDF(summary,'meeting_summary', 'Meeting Summary');
+
+        }
+        else {
+            const response = await fetch(`/api/getAudio?url=${encodeURIComponent(meeting.url)}`);
+            const data = await response.json();
+              
+            if (data.success) {
+                console.log('File saved at:', data.filePath);
+            } else {
+                console.log('Download failed:', data.error);
+            }
+            const transcript = await getTranscript(data.filePath);
+                console.log('Transcript:', transcript);
+                const summary = await getSummary(transcript);
+                getPDF(summary,'meeting_summary', 'Meeting Summary');
+            
+        }
+};
   return (
     <div className='grid grid-cols-1 gap-5 xl:grid-cols-2'>
         { calls && calls.length>0 ? calls.map((meeting:Call|CallRecording)=>(
@@ -75,6 +128,12 @@ if(isLoading)return <Loader/>
                     (router.push(`/meeting/${meeting.id}`))}
                 link = {type==='recordings' ? meeting.url : `${
                     process.env.NEXT_PUBLIC_BASE_URL}/meeting/${meeting.id}`}
+                    showTranscriptButton={type === 'recordings'}
+                    showSummaryButton={type === 'recordings'}
+                    transcriptButtonText="Get Transcript"
+                    summaryButtonText="Get Summary"
+                    handleTranscriptClick={() => handleGetTranscript(meeting)}
+                    handleSummaryClick={() => handleGetSummary(meeting)}
                 />
          )):(
                <h1>{noCallMessage}</h1>

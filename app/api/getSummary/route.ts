@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
                         content: `Summarize this transcript: ${transcript}`
                     }
                 ],
-                max_tokens: 500
+                max_tokens: 1500
             })
         });
 
